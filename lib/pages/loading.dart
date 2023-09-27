@@ -1,7 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
+// import 'package:shared_preferences/shared_preferences.dart';
 
 class Loading extends StatefulWidget {
+  final String token;
+
+  const Loading({Key key, this.token}) : super(key: key);
+
   @override
   State<Loading> createState() => _LoadingState();
 }
@@ -11,9 +16,16 @@ class _LoadingState extends State<Loading> {
   void initState() {
     super.initState();
 
-    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-      Navigator.pushReplacementNamed(context, '/register');
-    });
+    if (widget.token != null) {
+      Future(() {
+        Navigator.pushReplacementNamed(context, '/chats');
+      });
+    } else {
+      Future(() {
+        Navigator.pushReplacementNamed(context, '/register');
+      });
+      print(widget.token);
+    }
   }
 
   @override

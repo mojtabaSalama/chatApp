@@ -3,13 +3,24 @@ import 'package:chatapp/chats_tabs/Users.dart';
 import 'package:chatapp/chats_tabs/rooms.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class Chats extends StatefulWidget {
+  final String token;
+
+  const Chats({Key key, this.token}) : super(key: key);
+
   @override
   State<Chats> createState() => _ChatsState();
 }
 
 class _ChatsState extends State<Chats> {
+  void deleteToken() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.remove("token");
+    Navigator.pushReplacementNamed(context, '/login');
+  }
+
   @override
   Widget build(BuildContext context) {
     return DefaultTabController(
@@ -29,7 +40,7 @@ class _ChatsState extends State<Chats> {
           leading: IconButton(
             splashRadius: 25.0,
             onPressed: () {
-              Navigator.pushNamed(context, '/login');
+              deleteToken();
             },
             icon: Icon(
               Icons.logout,

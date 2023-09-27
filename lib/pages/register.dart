@@ -1,7 +1,11 @@
+import 'dart:convert';
+
 import 'package:chatapp/components/form_componenets/app_name.dart';
 import 'package:chatapp/components/form_componenets/form_button.dart';
 import 'package:chatapp/components/form_componenets/text_field.dart';
+import 'package:chatapp/utilites/config.dart';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 
 class Register extends StatefulWidget {
   @override
@@ -9,17 +13,43 @@ class Register extends StatefulWidget {
 }
 
 class _RegisterState extends State<Register> {
-  final userNameContrller = TextEditingController();
-  final passwordContrller = TextEditingController();
+  final TextEditingController nameContrller = TextEditingController();
+  final TextEditingController passwordContrller = TextEditingController();
 
   String error;
 
   void registerUser() async {
-    if (userNameContrller.text.isEmpty || passwordContrller.text.isEmpty) ;
-
-    setState(() {
-      error = "empty field";
-    });
+    try {
+      if (nameContrller.text.isNotEmpty || passwordContrller.text.isNotEmpty) {
+        setState(() {
+          error = null;
+        });
+        var registerBody = {
+          "name": nameContrller.text,
+          "password": passwordContrller.text
+        };
+        var response = await http.post(
+          Uri.parse(register),
+          headers: {"Content-Type": "application/json"},
+          body: jsonEncode(registerBody),
+        );
+        var decodedRespons = jsonDecode(response.body);
+        var status = response.statusCode;
+        if (status != 200) {
+          setState(() {
+            error = decodedRespons["msg"];
+          });
+        } else {
+          Navigator.pushNamed(context, '/login');
+        }
+      } else {
+        setState(() {
+          error = "empty field";
+        });
+      }
+    } catch (e) {
+      print(e);
+    }
   }
 
   @override
@@ -65,8 +95,8 @@ class _RegisterState extends State<Register> {
                   // ),
                   MyTextField(
                     obscureText: false,
-                    hintText: "User Name",
-                    controller: userNameContrller,
+                    hintText: "Name",
+                    controller: nameContrller,
                     error: error != null ? "" : null,
                   ),
                   MyTextField(
@@ -85,7 +115,6 @@ class _RegisterState extends State<Register> {
                       registerUser();
 
                       // Navigator.pushNamed(context, '/chats');
-                      setState(() {});
                     },
                     buttonText: "Register ",
                   ),

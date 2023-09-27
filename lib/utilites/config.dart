@@ -1,4 +1,4 @@
-final url = "127.0.0.1:8000";
+final url = "http://10.2.2.2";
 
 //user
 final register = url + "/api/user/register";

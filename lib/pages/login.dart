@@ -1,7 +1,15 @@
+import 'dart:convert';
+
 import 'package:chatapp/components/form_componenets/app_name.dart';
 import 'package:chatapp/components/form_componenets/form_button.dart';
 import 'package:chatapp/components/form_componenets/text_field.dart';
+import 'package:chatapp/pages/chats.dart';
+import 'package:chatapp/pages/loading.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
+import 'package:chatapp/utilites/config.dart';
+import 'package:http/http.dart' as http;
 
 class Login extends StatefulWidget {
   @override
@@ -9,14 +17,62 @@ class Login extends StatefulWidget {
 }
 
 class _LoginState extends State<Login> {
-  final userNameContrller = TextEditingController();
-  final passwordContrller = TextEditingController();
+  final TextEditingController nameContrller = TextEditingController();
+  final TextEditingController passwordContrller = TextEditingController();
   String error;
+  SharedPreferences prefs;
+
+  @override
+  void initState() {
+    super.initState();
+    initSharedPref();
+  }
+
+  void initSharedPref() async {
+    prefs = await SharedPreferences.getInstance();
+  }
+
   void loginUser() async {
-    if (userNameContrller.text.isEmpty || passwordContrller.text.isEmpty) {
-      setState(() {
-        error = "empty field";
-      });
+    try {
+      if (nameContrller.text.isNotEmpty || passwordContrller.text.isNotEmpty) {
+        setState(() {
+          error = null;
+        });
+        var loginBody = {
+          "name": nameContrller.text,
+          "password": passwordContrller.text
+        };
+        var response = await http.post(
+          Uri.parse(login),
+          headers: {"Content-Type": "application/json"},
+          body: jsonEncode(loginBody),
+        );
+        var decodedRespons = jsonDecode(response.body);
+
+        // print(decodedRespons["token"]);
+        var status = response.statusCode;
+        if (status != 200) {
+          setState(() {
+            error = decodedRespons["msg"];
+          });
+        } else {
+          var myToken = decodedRespons["token"];
+          prefs.setString("token", myToken);
+          Chats(
+            token: myToken,
+          );
+          Loading(
+            token: myToken,
+          );
+          Navigator.pushReplacementNamed(context, '/chats');
+        }
+      } else {
+        setState(() {
+          error = "empty field";
+        });
+      }
+    } catch (e) {
+      print(e);
     }
   }
 
@@ -58,13 +114,15 @@ class _LoginState extends State<Login> {
                   // ),
                   MyTextField(
                     obscureText: false,
-                    hintText: "User Name",
+                    hintText: "Name",
                     error: error != null ? "" : error,
+                    controller: nameContrller,
                   ),
                   MyTextField(
                     obscureText: true,
                     hintText: "passowrd",
                     error: error,
+                    controller: passwordContrller,
                   ),
                   SizedBox(
                     height: 60,
@@ -74,7 +132,6 @@ class _LoginState extends State<Login> {
                     onTab: () {
                       // Navigator.pushNamed(context, '/chats');
                       loginUser();
-                      setState(() {});
                     },
                     buttonText: "Login ",
                   ),
