@@ -35,19 +35,17 @@ class _LoginState extends State<Login> {
   void loginUser() async {
     try {
       if (nameContrller.text.isNotEmpty || passwordContrller.text.isNotEmpty) {
-        setState(() {
-          error = null;
-        });
         var loginBody = {
           "name": nameContrller.text,
           "password": passwordContrller.text
         };
         var response = await http.post(
           Uri.parse(login),
-          headers: {"Content-Type": "application/json"},
+          headers: {'Content-Type': 'application/json'},
           body: jsonEncode(loginBody),
         );
-        var decodedRespons = jsonDecode(response.body);
+        // print(response.body);
+        var decodedRespons = await jsonDecode(response.body);
 
         // print(decodedRespons["token"]);
         var status = response.statusCode;
@@ -57,22 +55,35 @@ class _LoginState extends State<Login> {
           });
         } else {
           var myToken = decodedRespons["token"];
-          prefs.setString("token", myToken);
+          var user = decodedRespons["user"];
+          var userId = user["id"];
+          var userName = user["name"];
+          var profilePic = user["profilePicture"];
+          print(profilePic);
+          await prefs.setString("token", myToken);
+          await prefs.setInt("userId", userId);
+          await prefs.setString("userName", userName);
+
+          // print(response.body);
+
+          await prefs.setString("DBprofilePic", profilePic);
+
           Chats(
             token: myToken,
           );
-          Loading(
-            token: myToken,
-          );
-          Navigator.pushReplacementNamed(context, '/chats');
+          // Loading(
+          //   token: myToken,
+          // );
+          await Navigator.pushReplacementNamed(context, '/chats');
         }
       } else {
         setState(() {
           error = "empty field";
         });
       }
-    } catch (e) {
+    } catch (e, stackTrace) {
       print(e);
+      print(stackTrace);
     }
   }
 

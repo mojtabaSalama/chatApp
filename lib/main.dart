@@ -1,5 +1,5 @@
 import 'package:chatapp/pages/chats.dart';
-import 'package:chatapp/pages/settings.dart';
+import 'package:chatapp/pages/profile.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -10,6 +10,7 @@ import 'pages/register.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   SharedPreferences prefs = await SharedPreferences.getInstance();
+
   runApp(MaterialApp(
     debugShowCheckedModeBanner: false,
     theme: ThemeData(
@@ -21,7 +22,11 @@ void main() async {
       '/register': (context) => Register(),
       '/login': (context) => Login(),
       '/chats': (context) => Chats(),
-      '/settings': (context) => Settings(),
+      '/profile': (context) => Profile(
+            id: prefs.getInt("userId"),
+            token: prefs.getString("token"),
+            name: prefs.getString("userName"),
+          ),
     },
   ));
 }

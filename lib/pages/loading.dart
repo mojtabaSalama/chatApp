@@ -15,6 +15,7 @@ class _LoadingState extends State<Loading> {
   @override
   void initState() {
     super.initState();
+    print(widget.token);
 
     if (widget.token != null) {
       Future(() {

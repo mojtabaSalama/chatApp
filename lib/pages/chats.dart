@@ -1,6 +1,7 @@
 import 'package:chatapp/chats_tabs/Chats.dart';
 import 'package:chatapp/chats_tabs/Users.dart';
 import 'package:chatapp/chats_tabs/rooms.dart';
+import 'package:chatapp/components/alertdialog/dialogeMessage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -23,6 +24,7 @@ class _ChatsState extends State<Chats> {
 
   @override
   Widget build(BuildContext context) {
+    DialogMessage dialog = DialogMessage(context, deleteToken);
     return DefaultTabController(
       length: 3,
       child: Scaffold(
@@ -39,9 +41,7 @@ class _ChatsState extends State<Chats> {
           centerTitle: true,
           leading: IconButton(
             splashRadius: 25.0,
-            onPressed: () {
-              deleteToken();
-            },
+            onPressed: () => dialog.dialog(context),
             icon: Icon(
               Icons.logout,
               size: 30.0,
@@ -58,11 +58,11 @@ class _ChatsState extends State<Chats> {
             IconButton(
                 splashRadius: 25.0,
                 icon: Icon(
-                  Icons.settings,
+                  Icons.person,
                   size: 30.0,
                 ),
                 onPressed: () {
-                  Navigator.pushNamed(context, '/settings');
+                  Navigator.pushNamed(context, '/profile');
                 }),
           ],
           bottom: TabBar(

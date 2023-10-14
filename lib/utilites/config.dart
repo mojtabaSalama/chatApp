@@ -1,9 +1,10 @@
-final url = "http://10.2.2.2";
+final url = "http://192.168.70.1:8000";
 
 //user
 final register = url + "/api/user/register";
 final login = url + "/api/user/login";
-final update = url + "/api/user/update";
+final updateName = url + "/api/user/updateName";
+final updatePassword = url + "/api/user/updatePassword";
 final updateImage = url + "/api/user/updateImage";
 final getUserById = url + "/api/user/get";
 final removeUser = url + "/api/user/remove";
