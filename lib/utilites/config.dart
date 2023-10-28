@@ -1,5 +1,5 @@
 final url = "http://192.168.70.1:8000";
-
+final ws = "ws://192.168.70.1:8000";
 //user
 final register = url + "/api/user/register";
 final login = url + "/api/user/login";
