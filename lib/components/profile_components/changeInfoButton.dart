@@ -7,7 +7,11 @@ class ChangInfoButton extends StatelessWidget {
   final void Function() onTab;
 
   const ChangInfoButton(
-      {Key key, this.onTab, this.buttonText, this.buttonIcon, this.color})
+      {Key? key,
+      required this.onTab,
+      required this.buttonText,
+      required this.buttonIcon,
+      required this.color})
       : super(key: key);
   @override
   Widget build(BuildContext context) {

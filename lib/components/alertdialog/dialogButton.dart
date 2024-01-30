@@ -5,7 +5,8 @@ class DialogButton extends StatelessWidget {
 
   final void Function() onTab;
 
-  const DialogButton({Key key, this.onTab, this.buttonText}) : super(key: key);
+  const DialogButton({Key? key, required this.onTab, required this.buttonText})
+      : super(key: key);
   @override
   Widget build(BuildContext context) {
     return InkWell(

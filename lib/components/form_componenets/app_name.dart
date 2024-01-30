@@ -9,7 +9,7 @@ class AppName extends StatelessWidget {
           fontSize: 44,
           fontWeight: FontWeight.bold,
           letterSpacing: 2,
-          color: Colors.green[600]),
+          color: Theme.of(context).primaryColor),
     );
   }
 }

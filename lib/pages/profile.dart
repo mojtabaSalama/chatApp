@@ -1,3 +1,5 @@
+// ignore_for_file: unnecessary_null_comparison
+
 import 'dart:convert';
 
 import 'dart:io';
@@ -23,7 +25,9 @@ class Profile extends StatefulWidget {
   final String token;
   final String name;
 
-  const Profile({Key key, this.id, this.token, this.name}) : super(key: key);
+  const Profile(
+      {Key? key, required this.id, required this.token, required this.name})
+      : super(key: key);
   @override
   State<Profile> createState() => _ProfileState();
 }
@@ -31,15 +35,15 @@ class Profile extends StatefulWidget {
 class _ProfileState extends State<Profile> {
   TextEditingController nameController = TextEditingController();
 
-  MediaType mediaType;
-  String error;
-  String name;
+  MediaType? mediaType;
+  late String error = "";
+  late String name = "";
 
-  String _image;
-  String _showImage;
-  SharedPreferences prefs;
-  String profilePic;
-  String DBprofilePic;
+  late String _image = "";
+  late String _showImage = "";
+  late SharedPreferences prefs;
+  late String profilePic = "";
+  late String DBprofilePic = "";
 
   @override
   void initState() {
@@ -57,10 +61,11 @@ class _ProfileState extends State<Profile> {
     prefs = await SharedPreferences.getInstance();
     if (prefs.containsKey("profilePic")) {
       setState(() {
-        profilePic = prefs.getString("profilePic");
-        DBprofilePic = prefs.getString("DBprofilePic");
+        profilePic = prefs.getString("profilePic")!;
+        DBprofilePic = prefs.getString("DBprofilePic")!;
       });
     }
+    print(DBprofilePic);
   }
 
 // ----------------------------------
@@ -181,35 +186,36 @@ class _ProfileState extends State<Profile> {
 
   void selectImage() async {
     final ImagePicker _imagePicker = ImagePicker();
-    XFile _file = await _imagePicker.pickImage(source: ImageSource.gallery);
+    XFile? _file = await _imagePicker.pickImage(source: ImageSource.gallery);
 
     if (_file == null) {
       print("no image is selected");
-    }
-    setState(() {
-      _image = _file.path;
-    });
-    final ext = path.extension(_file.path).toLowerCase();
-
-    // set the contentType parameter based on the file extension
-
-    if (ext == '.jpg' || ext == '.jpeg') {
-      setState(() {
-        mediaType = MediaType('image', 'jpeg');
-      });
-    } else if (ext == '.png') {
-      setState(() {
-        mediaType = MediaType('image', 'png');
-      });
-    } else if (ext == '.gif') {
-      setState(() {
-        mediaType = MediaType('image', 'gif');
-      });
     } else {
-      showSnackBar(context, 'Unsupported file type: $ext', "error");
-    }
+      setState(() {
+        _image = _file.path;
+      });
+      final ext = path.extension(_file.path).toLowerCase();
 
-    saveInDatabase();
+      // set the contentType parameter based on the file extension
+
+      if (ext == '.jpg' || ext == '.jpeg') {
+        setState(() {
+          mediaType = MediaType('image', 'jpeg');
+        });
+      } else if (ext == '.png') {
+        setState(() {
+          mediaType = MediaType('image', 'png');
+        });
+      } else if (ext == '.gif') {
+        setState(() {
+          mediaType = MediaType('image', 'gif');
+        });
+      } else {
+        showSnackBar(context, 'Unsupported file type: $ext', "error");
+      }
+
+      saveInDatabase();
+    }
   }
 
   void saveInDatabase() async {
@@ -260,6 +266,7 @@ class _ProfileState extends State<Profile> {
 
     return Scaffold(
       appBar: AppBar(
+        backgroundColor: Theme.of(context).primaryColor,
         elevation: 2.0,
         title: Text(
           "Profile",
@@ -280,35 +287,38 @@ class _ProfileState extends State<Profile> {
                   clipBehavior: Clip.none,
                   fit: StackFit.expand,
                   children: [
-                    _showImage == null &&
-                            profilePic == null &&
-                            DBprofilePic == null
+                    _showImage.isNotEmpty
                         ? CircleAvatar(
                             radius: 64,
-                            backgroundColor: Colors.white,
-                            child: Container(
-                              child: Icon(
-                                Icons.person,
-                                size: 100,
-                                color: Colors.grey,
-                              ),
-                            ),
-                          )
-                        : CircleAvatar(
-                            radius: 64,
                             backgroundColor: Colors.grey[200],
-                            backgroundImage: _showImage != null
-                                ? FileImage(File(_showImage))
-                                : profilePic != null
-                                    ? FileImage(File(profilePic))
-                                    : NetworkImage(
-                                        url + "/api/user/" + DBprofilePic),
-                          ),
+                            backgroundImage: FileImage(File(_showImage)))
+                        : profilePic.isNotEmpty
+                            ? CircleAvatar(
+                                radius: 64,
+                                backgroundColor: Colors.grey[200],
+                                backgroundImage: FileImage(File(profilePic)))
+                            : DBprofilePic.isNotEmpty
+                                ? CircleAvatar(
+                                    radius: 64,
+                                    backgroundColor: Colors.grey[200],
+                                    backgroundImage: NetworkImage(
+                                        url + "/api/user/" + DBprofilePic))
+                                : CircleAvatar(
+                                    radius: 64,
+                                    backgroundColor: Colors.white,
+                                    child: Container(
+                                      child: Icon(
+                                        Icons.person,
+                                        size: 100,
+                                        color: Colors.grey,
+                                      ),
+                                    ),
+                                  ),
                     Positioned(
                         bottom: 0,
                         right: -25,
                         child: RawMaterialButton(
-                          fillColor: Colors.green[600],
+                          fillColor: Theme.of(context).primaryColor,
                           onPressed: selectImage,
                           elevation: 2.0,
                           child: Icon(
@@ -325,7 +335,7 @@ class _ProfileState extends State<Profile> {
                 height: 40,
               ),
               Text(
-                name == null ? widget.name : name,
+                name.isEmpty ? widget.name : name,
                 style: TextStyle(
                   fontSize: 30,
                 ),
@@ -342,14 +352,14 @@ class _ProfileState extends State<Profile> {
                 onTab: () => editUserBottomSheet(context),
                 buttonText: "Edit name ",
                 buttonIcon: Icons.edit,
-                color: Colors.grey[600],
+                color: const Color.fromARGB(255, 61, 55, 55),
               ),
               ChangInfoButton(
                 onTab: () =>
                     passwordBottomSheet.editPasswordBottomSheet(context),
                 buttonText: "Change password ",
                 buttonIcon: Icons.edit,
-                color: Colors.grey[600],
+                color: const Color.fromARGB(255, 61, 55, 55),
               ),
               ChangInfoButton(
                 onTab: () => dialog.dialog(context),

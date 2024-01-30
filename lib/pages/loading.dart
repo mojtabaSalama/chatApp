@@ -5,7 +5,7 @@ import 'package:flutter_spinkit/flutter_spinkit.dart';
 class Loading extends StatefulWidget {
   final String token;
 
-  const Loading({Key key, this.token}) : super(key: key);
+  const Loading({Key? key, required this.token}) : super(key: key);
 
   @override
   State<Loading> createState() => _LoadingState();
@@ -17,7 +17,7 @@ class _LoadingState extends State<Loading> {
     super.initState();
     print(widget.token);
 
-    if (widget.token != null) {
+    if (widget.token.isNotEmpty) {
       Future(() {
         Navigator.pushReplacementNamed(context, '/chats');
       });

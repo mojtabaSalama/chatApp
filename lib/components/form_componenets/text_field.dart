@@ -7,7 +7,11 @@ class MyTextField extends StatelessWidget {
   final String error;
 
   MyTextField(
-      {Key key, this.obscureText, this.hintText, this.controller, this.error})
+      {Key? key,
+      required this.obscureText,
+      required this.hintText,
+      required this.controller,
+      required this.error})
       : super(key: key);
 
   @override
@@ -18,14 +22,18 @@ class MyTextField extends StatelessWidget {
         controller: controller,
         obscureText: obscureText,
         decoration: InputDecoration(
-            hintStyle: TextStyle(fontSize: 20.0),
-            hintText: hintText,
-            border: OutlineInputBorder(),
-            hoverColor: Colors.green,
-            filled: true,
-            errorText: error == null ? null : error,
-            errorStyle: TextStyle(color: Colors.red, fontSize: 16)),
+          hintStyle: TextStyle(fontSize: 20.0),
+          hintText: hintText,
+          border: OutlineInputBorder(
+              borderSide: BorderSide(color: Theme.of(context).primaryColor)),
+          focusedBorder: OutlineInputBorder(
+              borderSide: BorderSide(color: Theme.of(context).primaryColor)),
+          filled: true,
+          errorText: error.isEmpty ? null : error,
+          errorStyle: TextStyle(color: Colors.red, fontSize: 16),
+        ),
         style: TextStyle(fontSize: 20.0),
+        cursorColor: Theme.of(context).primaryColor,
       ),
     );
   }

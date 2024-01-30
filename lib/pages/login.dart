@@ -4,12 +4,13 @@ import 'package:chatapp/components/form_componenets/app_name.dart';
 import 'package:chatapp/components/form_componenets/form_button.dart';
 import 'package:chatapp/components/form_componenets/text_field.dart';
 import 'package:chatapp/pages/chats.dart';
-import 'package:chatapp/pages/loading.dart';
+
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:chatapp/utilites/config.dart';
 import 'package:http/http.dart' as http;
+import 'package:chatapp/functions.dart';
 
 class Login extends StatefulWidget {
   @override
@@ -19,8 +20,15 @@ class Login extends StatefulWidget {
 class _LoginState extends State<Login> {
   final TextEditingController nameContrller = TextEditingController();
   final TextEditingController passwordContrller = TextEditingController();
-  String error;
-  SharedPreferences prefs;
+  late String error = "";
+  late SharedPreferences prefs;
+
+  late var myToken;
+  late var user;
+  late var userId;
+  late var userName;
+  late var profilePic;
+  late List<dynamic> users;
 
   @override
   void initState() {
@@ -30,6 +38,12 @@ class _LoginState extends State<Login> {
 
   void initSharedPref() async {
     prefs = await SharedPreferences.getInstance();
+  }
+
+  void onError() {
+    return setState(() {
+      error = "wrong info";
+    });
   }
 
   void loginUser() async {
@@ -59,24 +73,27 @@ class _LoginState extends State<Login> {
           var userId = user["id"];
           var userName = user["name"];
           var profilePic = user["profilePicture"];
-          print(profilePic);
+
           await prefs.setString("token", myToken);
           await prefs.setInt("userId", userId);
           await prefs.setString("userName", userName);
 
-          // print(response.body);
+          if (profilePic != null) {
+            await prefs.setString("DBprofilePic", profilePic);
+          }
+          print(prefs.getString("DBprofilePic"));
 
-          await prefs.setString("DBprofilePic", profilePic);
-
-          Chats(
-            token: myToken,
-          );
+          Chats(token: myToken);
           // Loading(
           //   token: myToken,
           // );
+
+          users = await getAllUSers(myToken, userId);
+
           await Navigator.pushReplacementNamed(context, '/chats');
         }
       } else {
+        print(error);
         setState(() {
           error = "empty field";
         });
@@ -84,7 +101,21 @@ class _LoginState extends State<Login> {
     } catch (e, stackTrace) {
       print(e);
       print(stackTrace);
+      setState(() {
+        error = "wrong info";
+      });
     }
+  }
+
+  //////////move to rooms tab
+  void getRooms(token) async {
+    var response = await http.post(
+      Uri.parse(allRooms),
+      headers: {
+        'Content-Type': 'application/json',
+        "x-auth-token": token,
+      },
+    );
   }
 
   @override
@@ -126,13 +157,13 @@ class _LoginState extends State<Login> {
                   MyTextField(
                     obscureText: false,
                     hintText: "Name",
-                    error: error != null ? "" : error,
+                    error: error.isEmpty ? "" : error,
                     controller: nameContrller,
                   ),
                   MyTextField(
                     obscureText: true,
                     hintText: "passowrd",
-                    error: error,
+                    error: "",
                     controller: passwordContrller,
                   ),
                   SizedBox(

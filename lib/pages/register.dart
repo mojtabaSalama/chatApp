@@ -16,13 +16,13 @@ class _RegisterState extends State<Register> {
   final TextEditingController nameContrller = TextEditingController();
   final TextEditingController passwordContrller = TextEditingController();
 
-  String error;
+  late String error = "";
 
   void registerUser() async {
     try {
       if (nameContrller.text.isNotEmpty || passwordContrller.text.isNotEmpty) {
         setState(() {
-          error = null;
+          // error = null;
         });
         var registerBody = {
           "name": nameContrller.text,
@@ -97,7 +97,7 @@ class _RegisterState extends State<Register> {
                     obscureText: false,
                     hintText: "Name",
                     controller: nameContrller,
-                    error: error != null ? "" : null,
+                    error: error,
                   ),
                   MyTextField(
                     obscureText: true,

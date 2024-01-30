@@ -10,10 +10,10 @@ import 'package:shared_preferences/shared_preferences.dart';
 class ChangeUser {
   TextEditingController nameController = TextEditingController();
 
-  String error;
+  late String error;
   String token;
   String newName;
-  String name;
+  late String name;
   int id;
   final BuildContext context;
 

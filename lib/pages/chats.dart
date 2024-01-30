@@ -3,13 +3,13 @@ import 'package:chatapp/chats_tabs/Users.dart';
 import 'package:chatapp/chats_tabs/rooms.dart';
 import 'package:chatapp/components/alertdialog/dialogeMessage.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
+
 import 'package:shared_preferences/shared_preferences.dart';
 
 class Chats extends StatefulWidget {
   final String token;
 
-  const Chats({Key key, this.token}) : super(key: key);
+  const Chats({Key? key, required this.token}) : super(key: key);
 
   @override
   State<Chats> createState() => _ChatsState();
@@ -19,6 +19,13 @@ class _ChatsState extends State<Chats> {
   void deleteToken() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     prefs.remove("token");
+    prefs.remove("userId");
+    prefs.remove("userName");
+
+    if (prefs.containsKey("profilePic")) {
+      prefs.remove("profilePic");
+    }
+
     Navigator.pushReplacementNamed(context, '/login');
   }
 
@@ -30,6 +37,7 @@ class _ChatsState extends State<Chats> {
       child: Scaffold(
         backgroundColor: Colors.white,
         appBar: AppBar(
+          backgroundColor: Theme.of(context).primaryColor,
           elevation: 2.0,
           title: Text(
             "ChatApp",

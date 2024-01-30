@@ -9,7 +9,7 @@ import 'package:chatapp/utilites/config.dart';
 class ChangePassword {
   TextEditingController currentPasswordController = TextEditingController();
   TextEditingController newPasswordController = TextEditingController();
-  String error;
+  late String error;
   String token;
   int id;
   final BuildContext context;

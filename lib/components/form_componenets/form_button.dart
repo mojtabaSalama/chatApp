@@ -5,9 +5,9 @@ class MyButton extends StatelessWidget {
   final void Function() onTab;
 
   const MyButton({
-    Key key,
-    this.onTab,
-    this.buttonText,
+    Key? key,
+    required this.onTab,
+    required this.buttonText,
   }) : super(key: key);
   @override
   Widget build(BuildContext context) {
@@ -17,7 +17,7 @@ class MyButton extends StatelessWidget {
         width: 320,
         height: 70,
         decoration: BoxDecoration(
-            color: Colors.green[600],
+            color: Theme.of(context).primaryColor,
             borderRadius: BorderRadius.circular(15.0)),
         child: Center(
             child: Text(buttonText,

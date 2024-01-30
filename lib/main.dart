@@ -14,18 +14,18 @@ void main() async {
   runApp(MaterialApp(
     debugShowCheckedModeBanner: false,
     theme: ThemeData(
-      primaryColor: Colors.green[600],
-    ),
+        primaryColor: Colors.green[600],
+        appBarTheme: AppBarTheme(color: Colors.green[600])),
     initialRoute: '/loading',
     routes: {
-      '/loading': (context) => Loading(token: prefs.getString("token")),
+      '/loading': (context) => Loading(token: prefs.getString("token") ?? ""),
       '/register': (context) => Register(),
       '/login': (context) => Login(),
-      '/chats': (context) => Chats(),
+      '/chats': (context) => Chats(token: prefs.getString("token") ?? ""),
       '/profile': (context) => Profile(
-            id: prefs.getInt("userId"),
-            token: prefs.getString("token"),
-            name: prefs.getString("userName"),
+            id: prefs.getInt("userId") ?? 0,
+            token: prefs.getString("token") ?? "",
+            name: prefs.getString("userName") ?? "",
           ),
     },
   ));
