@@ -3,7 +3,9 @@
 import 'dart:convert';
 
 import 'dart:io';
-import 'package:chatapp/components/snackbar/snackBar.dart';
+import 'package:chatapp/components/UserInfoDialog/changeUser.dart';
+import 'package:chatapp/components/roomTabComponents/bottomSheet.dart';
+
 import 'package:image_picker/image_picker.dart';
 
 import 'package:chatapp/components/UserInfoDialog/changePassword.dart';
@@ -19,6 +21,7 @@ import 'package:chatapp/components/alertdialog/dialogeMessage.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http_parser/http_parser.dart';
 import 'package:path/path.dart' as path;
+import 'package:chatapp/components/UserInfoDialog/changePassword.dart';
 
 class Profile extends StatefulWidget {
   final int id;
@@ -62,106 +65,14 @@ class _ProfileState extends State<Profile> {
     if (prefs.containsKey("profilePic")) {
       setState(() {
         profilePic = prefs.getString("profilePic")!;
+        DBprofilePic = prefs.getString("profilePic")!;
+      });
+    } else {
+      setState(() {
         DBprofilePic = prefs.getString("DBprofilePic")!;
       });
     }
     print(DBprofilePic);
-  }
-
-// ----------------------------------
-
-  void editName() async {
-    try {
-      if (nameController.text.isEmpty) {
-        showSnackBar(context, "Name can't be empty", "error");
-      } else {
-        var response = await http.post(
-          Uri.parse(updateName),
-          headers: {
-            'Content-Type': 'application/json',
-            "x-auth-token": widget.token
-          },
-          body: jsonEncode({"id": widget.id, "name": nameController.text}),
-        );
-        var decodedRespons = await jsonDecode(response.body);
-        if (response.statusCode != 200) {
-          setState(() {
-            error = decodedRespons["msg"];
-          });
-        } else {
-          setState(() {
-            name = nameController.text;
-          });
-          await prefs.setString("userName", name);
-          Navigator.pop(context);
-        }
-      }
-    } catch (e) {
-      print(e);
-    }
-  }
-
-  void editUserBottomSheet(context) {
-    nameController.text = name;
-    try {
-      showModalBottomSheet(
-          clipBehavior: Clip.antiAlias,
-          shape:
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-          isScrollControlled: true,
-          context: context,
-          builder: (BuildContext context) {
-            return Container(
-              child: Padding(
-                padding: const EdgeInsets.all(20.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Text(
-                        "Enter your name :",
-                        style: TextStyle(
-                            fontWeight: FontWeight.bold, fontSize: 24),
-                      ),
-                    ),
-                    MyTextField(
-                      controller: nameController,
-                      obscureText: false,
-                      hintText: "name",
-                      error: error,
-                    ),
-                    SizedBox(
-                      height: 20,
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.end,
-                        children: [
-                          DialogButton(
-                            onTab: () => {Navigator.pop(context)},
-                            buttonText: "Cancel",
-                          ),
-                          SizedBox(
-                            width: 40,
-                          ),
-                          DialogButton(
-                            onTab: editName,
-                            buttonText: "OK",
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            );
-          });
-    } catch (e) {
-      print(e);
-    }
   }
 
 // -----------------------
@@ -211,7 +122,12 @@ class _ProfileState extends State<Profile> {
           mediaType = MediaType('image', 'gif');
         });
       } else {
-        showSnackBar(context, 'Unsupported file type: $ext', "error");
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          behavior: SnackBarBehavior.floating,
+          padding: EdgeInsets.all(10),
+          backgroundColor: Colors.red,
+          content: Text('Unsupported file type: $ext'),
+        ));
       }
 
       saveInDatabase();
@@ -241,16 +157,30 @@ class _ProfileState extends State<Profile> {
       var decodedResponse =
           await jsonDecode(await response.stream.bytesToString());
       if (response.statusCode != 200) {
-        showSnackBar(context, decodedResponse["msg"], "error");
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          behavior: SnackBarBehavior.floating,
+          padding: EdgeInsets.all(10),
+          backgroundColor: Colors.red,
+          content: Text(decodedResponse["msg"]),
+        ));
       }
 
       setState(() {
         _showImage = _image;
         setprofilePic();
       });
-      showSnackBar(context, decodedResponse["msg"], null);
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        behavior: SnackBarBehavior.floating,
+        padding: EdgeInsets.all(10),
+        content: Text(decodedResponse["msg"]),
+      ));
     } catch (e) {
-      showSnackBar(context, "something went wrong ", "error");
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        behavior: SnackBarBehavior.floating,
+        padding: EdgeInsets.all(10),
+        backgroundColor: Colors.red,
+        content: Text("something wnt wrong"),
+      ));
     }
   }
 
@@ -261,8 +191,15 @@ class _ProfileState extends State<Profile> {
   @override
   Widget build(BuildContext context) {
     DialogMessage dialog = DialogMessage(context, _delteAcount);
-    ChangePassword passwordBottomSheet =
-        ChangePassword(context, widget.id, widget.token);
+    TextEditingController currentPasswordController = TextEditingController();
+    TextEditingController newPasswordController = TextEditingController();
+    TextEditingController nameController = TextEditingController();
+
+    void onTap = () =>
+        editName(nameController, context, widget.id, widget.token, widget.name);
+
+    // ChangePassword passwordBottomSheet =
+    //     ChangePassword(context, widget.id, widget.token);
 
     return Scaffold(
       appBar: AppBar(
@@ -349,14 +286,15 @@ class _ProfileState extends State<Profile> {
                 ),
               ),
               ChangInfoButton(
-                onTab: () => editUserBottomSheet(context),
+                onTab: () => sheet(nameController, context, widget.id,
+                    widget.token, name, onTap, "Enter your name :", "Ok"),
                 buttonText: "Edit name ",
                 buttonIcon: Icons.edit,
                 color: const Color.fromARGB(255, 61, 55, 55),
               ),
               ChangInfoButton(
-                onTab: () =>
-                    passwordBottomSheet.editPasswordBottomSheet(context),
+                onTab: () => editPasswordBottomSheet(currentPasswordController,
+                    newPasswordController, context, widget.id, widget.token),
                 buttonText: "Change password ",
                 buttonIcon: Icons.edit,
                 color: const Color.fromARGB(255, 61, 55, 55),

@@ -3,7 +3,7 @@ import 'dart:convert';
 import 'package:chatapp/utilites/config.dart';
 import 'package:http/http.dart' as http;
 
-Future<List<dynamic>> getAllUSers(token, id) async {
+Future<List<dynamic>> getAllUSers( String token,int id) async {
   List<dynamic> users = [];
   var response = await http.post(
     Uri.parse(getAllUsers),
@@ -25,7 +25,7 @@ Future<List<dynamic>> getAllUSers(token, id) async {
   return users;
 }
 
-Future<List<dynamic>> getAllRooms(token, id) async {
+Future<List<dynamic>> getAllRooms(String token, int id) async {
   List<dynamic> rooms = [];
   var response = await http.post(
     Uri.parse(allRooms),

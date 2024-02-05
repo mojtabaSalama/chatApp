@@ -21,7 +21,11 @@ void main() async {
       '/loading': (context) => Loading(token: prefs.getString("token") ?? ""),
       '/register': (context) => Register(),
       '/login': (context) => Login(),
-      '/chats': (context) => Chats(token: prefs.getString("token") ?? ""),
+      '/chats': (context) => Chats(
+            id: prefs.getInt("userId") ?? 0,
+            token: prefs.getString("token") ?? "",
+            name: prefs.getString("userName") ?? "",
+          ),
       '/profile': (context) => Profile(
             id: prefs.getInt("userId") ?? 0,
             token: prefs.getString("token") ?? "",

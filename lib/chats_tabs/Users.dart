@@ -9,31 +9,31 @@ import 'package:chatapp/pages/login.dart';
 import 'package:chatapp/utilites/SPrefrencesData.dart';
 
 class UsersTab extends StatefulWidget {
+  final int id;
+  final String token;
+  final String name;
+
+  const UsersTab(
+      {Key? key, required this.id, required this.token, required this.name})
+      : super(key: key);
   @override
   State<UsersTab> createState() => _UsersTabState();
 }
 
 class _UsersTabState extends State<UsersTab> {
   var _users = [];
-  late String name;
-  late int id;
-  late String token;
 
   @override
   void initState() {
     super.initState();
-    loadSP().then((SPData) {
-      setState(() {
-        token = SPData[0];
-        id = SPData[1] as int;
-        name = SPData[2];
-      });
-      getAllUSers(token, id).then((users) {
-        setState(() {
-          users.removeWhere((user) => user['name'] == name);
-          _users = users;
-        });
-      });
+    allUSers();
+  }
+
+  void allUSers() async {
+    var users = await getAllUSers(widget.token, widget.id);
+    setState(() {
+      users.removeWhere((user) => user['name'] == widget.name);
+      _users = users;
     });
   }
 
@@ -47,10 +47,11 @@ class _UsersTabState extends State<UsersTab> {
                 itemCount: _users.length,
                 itemBuilder: (context, index) {
                   final user = _users[index];
+                  print(user);
 
                   return ListTile(
                     onTap: () {},
-                    leading: user['profilePic'].isEmpty
+                    leading: user['profilePic'] == null
                         ? CircleAvatar(
                             backgroundColor: Colors.white,
                             radius: 35,

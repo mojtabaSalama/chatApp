@@ -83,7 +83,11 @@ class _LoginState extends State<Login> {
           }
           print(prefs.getString("DBprofilePic"));
 
-          Chats(token: myToken);
+          Chats(
+            token: myToken,
+            id: userId,
+            name: userName,
+          );
           // Loading(
           //   token: myToken,
           // );

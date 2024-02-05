@@ -8,8 +8,12 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 class Chats extends StatefulWidget {
   final String token;
+  final String name;
+  final int id;
 
-  const Chats({Key? key, required this.token}) : super(key: key);
+  const Chats(
+      {Key? key, required this.token, required this.id, required this.name})
+      : super(key: key);
 
   @override
   State<Chats> createState() => _ChatsState();
@@ -95,8 +99,16 @@ class _ChatsState extends State<Chats> {
         body: Center(
           child: TabBarView(children: [
             Chatstab(),
-            UsersTab(),
-            RoomsTab(),
+            UsersTab(
+              token: widget.token,
+              id: widget.id,
+              name: widget.name,
+            ),
+            RoomsTab(
+              token: widget.token,
+              id: widget.id,
+              name: widget.name,
+            ),
           ]),
         ),
       ),
