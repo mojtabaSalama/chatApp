@@ -25,6 +25,7 @@ class _ChatsState extends State<Chats> {
     prefs.remove("token");
     prefs.remove("userId");
     prefs.remove("userName");
+    prefs.remove("DBprofilePic");
 
     if (prefs.containsKey("profilePic")) {
       prefs.remove("profilePic");

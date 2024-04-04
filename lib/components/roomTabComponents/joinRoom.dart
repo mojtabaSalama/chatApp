@@ -8,29 +8,24 @@ import 'package:http/http.dart' as http;
 import 'package:chatapp/utilites/config.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-void editName(TextEditingController nameController, BuildContext context,
-    int id, String token) async {
-  print("object");
+void JoinExistedRoom(TextEditingController roomNameController,
+    BuildContext context, int id, String token) async {
   try {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    if (nameController.text.isEmpty) {
+    if (roomNameController.text.isEmpty) {
+      print("empty");
       showSnackBar(context, "Name can't be empty", "error");
     } else {
       var response = await http.post(
-        Uri.parse(updateName),
+        Uri.parse(joinRoom),
         headers: {'Content-Type': 'application/json', "x-auth-token": token},
-        body: jsonEncode({"id": id, "name": nameController.text}),
+        body: jsonEncode({"id": id, "room_name": roomNameController.text}),
       );
       var decodedRespons = await jsonDecode(response.body);
       if (response.statusCode != 200) {
         showSnackBar(context, decodedRespons["msg"], "error");
       } else {
-        showSnackBar(context, decodedRespons["msg"], "");
-
-        await prefs.remove("userName");
-        await prefs.setString("userName", nameController.text);
-
         Navigator.pop(context);
+        showSnackBar(context, decodedRespons["msg"], "");
       }
     }
   } catch (e) {
@@ -38,9 +33,9 @@ void editName(TextEditingController nameController, BuildContext context,
   }
 }
 
-void editUserBottomSheet(
-  TextEditingController nameController,
-  BuildContext context,
+void joinRoomBottomSheet(
+  TextEditingController roomNameController,
+  context,
   int id,
   String token,
 ) async {
@@ -61,15 +56,15 @@ void editUserBottomSheet(
                   Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: Text(
-                      "Enter the new name :",
+                      "Join a room ",
                       style:
                           TextStyle(fontWeight: FontWeight.bold, fontSize: 24),
                     ),
                   ),
                   MyTextField(
-                      controller: nameController,
+                      controller: roomNameController,
                       obscureText: false,
-                      hintText: "New Name",
+                      hintText: "Room name :",
                       error: ""),
                   SizedBox(
                     height: 20,
@@ -87,9 +82,9 @@ void editUserBottomSheet(
                           width: 40,
                         ),
                         DialogButton(
-                          onTab: () =>
-                              editName(nameController, context, id, token),
-                          buttonText: "OK",
+                          onTab: () => JoinExistedRoom(
+                              roomNameController, context, id, token),
+                          buttonText: "join",
                         ),
                       ],
                     ),

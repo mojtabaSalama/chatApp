@@ -2,6 +2,8 @@ import 'package:chatapp/pages/chats.dart';
 import 'package:chatapp/pages/profile.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:chatapp/pages/messaging/messageRoom.dart';
+import 'package:chatapp/pages/messaging/messageUser.dart';
 
 import 'pages/loading.dart';
 import 'pages/login.dart';
@@ -31,6 +33,10 @@ void main() async {
             token: prefs.getString("token") ?? "",
             name: prefs.getString("userName") ?? "",
           ),
+      '/messageUser': (context) => MessageUser(
+            
+          ),
+      '/messageRoom': (context) => MessageRoom(),
     },
   ));
 }

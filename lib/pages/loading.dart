@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
-// import 'package:shared_preferences/shared_preferences.dart';
 
 class Loading extends StatefulWidget {
+  //token from main.dart
   final String token;
 
   const Loading({Key? key, required this.token}) : super(key: key);
@@ -15,8 +15,8 @@ class _LoadingState extends State<Loading> {
   @override
   void initState() {
     super.initState();
-    print(widget.token);
 
+//check if user logged in then open chat page, if not open register page
     if (widget.token.isNotEmpty) {
       Future(() {
         Navigator.pushReplacementNamed(context, '/chats');
@@ -25,7 +25,6 @@ class _LoadingState extends State<Loading> {
       Future(() {
         Navigator.pushReplacementNamed(context, '/register');
       });
-      print(widget.token);
     }
   }
 
@@ -38,6 +37,7 @@ class _LoadingState extends State<Loading> {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
+            //text in the middlle of the page
             Text(
               "ChatApp",
               style: TextStyle(

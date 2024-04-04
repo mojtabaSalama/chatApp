@@ -4,7 +4,7 @@ import 'dart:convert';
 
 import 'dart:io';
 import 'package:chatapp/components/UserInfoDialog/changeUser.dart';
-import 'package:chatapp/components/roomTabComponents/bottomSheet.dart';
+import 'package:chatapp/components/roomTabComponents/joinRoom.dart';
 
 import 'package:image_picker/image_picker.dart';
 
@@ -68,9 +68,11 @@ class _ProfileState extends State<Profile> {
         DBprofilePic = prefs.getString("profilePic")!;
       });
     } else {
-      setState(() {
-        DBprofilePic = prefs.getString("DBprofilePic")!;
-      });
+      if (prefs.containsKey("DBprofilePic")) {
+        setState(() {
+          DBprofilePic = prefs.getString("DBprofilePic")!;
+        });
+      }
     }
     print(DBprofilePic);
   }
@@ -195,9 +197,6 @@ class _ProfileState extends State<Profile> {
     TextEditingController newPasswordController = TextEditingController();
     TextEditingController nameController = TextEditingController();
 
-    void onTap = () =>
-        editName(nameController, context, widget.id, widget.token, widget.name);
-
     // ChangePassword passwordBottomSheet =
     //     ChangePassword(context, widget.id, widget.token);
 
@@ -286,8 +285,8 @@ class _ProfileState extends State<Profile> {
                 ),
               ),
               ChangInfoButton(
-                onTab: () => sheet(nameController, context, widget.id,
-                    widget.token, name, onTap, "Enter your name :", "Ok"),
+                onTab: () => editUserBottomSheet(
+                    nameController, context, widget.id, widget.token),
                 buttonText: "Edit name ",
                 buttonIcon: Icons.edit,
                 color: const Color.fromARGB(255, 61, 55, 55),

@@ -1,10 +1,10 @@
-import 'package:chatapp/components/roomTabComponents/bottomSheet.dart';
+import 'package:chatapp/components/roomTabComponents/joinRoom.dart';
 import 'package:chatapp/functions.dart';
 import 'package:chatapp/utilites/SPrefrencesData.dart';
 import 'package:chatapp/utilites/config.dart';
 import 'package:flutter/material.dart';
 import 'package:chatapp/components/roomTabComponents/icon.dart';
-import 'package:chatapp/components/roomTabComponents/functions.dart';
+import 'package:chatapp/components/roomTabComponents/createRoom.dart';
 
 class RoomsTab extends StatefulWidget {
   final int id;
@@ -42,11 +42,6 @@ class _RoomsTabState extends State<RoomsTab> {
     TextEditingController createRoomNamrController = TextEditingController();
     TextEditingController joinRoomNamrController = TextEditingController();
 
-    void createRoomFunc = () => roomDatabase(
-        createRoomNamrController, context, widget.id, widget.token, createRoom);
-    void joinRoomFunc = () => roomDatabase(
-        joinRoomNamrController, context, widget.id, widget.token, joinRoom);
-
     return Padding(
       padding: const EdgeInsets.only(top: 15),
       child: Stack(children: [
@@ -58,7 +53,16 @@ class _RoomsTabState extends State<RoomsTab> {
                     final room = _rooms[index];
 
                     return ListTile(
-                      onTap: () {},
+                      onTap: () {
+                        Navigator.pushNamed(context, '/messageUser',
+                            arguments: {
+                              'senderId': widget.id,
+                              'token': widget.token,
+                              'roomId': room['id'],
+                              'roomName': room['name'],
+                              'roomMembers': room['roomMembers'] ?? '',
+                            });
+                      },
                       leading: CircleAvatar(
                         backgroundColor: Colors.white,
                         radius: 35,
@@ -102,15 +106,12 @@ class _RoomsTabState extends State<RoomsTab> {
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
                   IconsButton(
-                      onPrssed: () => sheet(
-                          createRoomNamrController,
-                          context,
-                          widget.id,
-                          widget.token,
-                          "room",
-                          createRoomFunc,
-                          "Enter room's name :",
-                          "Create"),
+                      onPrssed: () => createRoomBottomSheet(
+                            createRoomNamrController,
+                            context,
+                            widget.id,
+                            widget.token,
+                          ),
                       buttonIcon: Icons.group_rounded),
                 ],
               ),
@@ -121,15 +122,12 @@ class _RoomsTabState extends State<RoomsTab> {
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
                   IconsButton(
-                      onPrssed: () => sheet(
-                          joinRoomNamrController,
-                          context,
-                          widget.id,
-                          widget.token,
-                          "room",
-                          joinRoomFunc,
-                          "Enter room's name :",
-                          "Join"),
+                      onPrssed: () => joinRoomBottomSheet(
+                            joinRoomNamrController,
+                            context,
+                            widget.id,
+                            widget.token,
+                          ),
                       buttonIcon: Icons.person_add),
                 ],
               )

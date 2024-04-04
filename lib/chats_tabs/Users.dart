@@ -47,10 +47,17 @@ class _UsersTabState extends State<UsersTab> {
                 itemCount: _users.length,
                 itemBuilder: (context, index) {
                   final user = _users[index];
-                  print(user);
 
                   return ListTile(
-                    onTap: () {},
+                    onTap: () async {
+                      Navigator.pushNamed(context, '/messageUser', arguments: {
+                        'senderId': widget.id,
+                        'token': widget.token,
+                        'recieverId': user['id'],
+                        'recieverName': user['name'],
+                        'recieverProfilePic': user['profilePic'] ?? '',
+                      });
+                    },
                     leading: user['profilePic'] == null
                         ? CircleAvatar(
                             backgroundColor: Colors.white,

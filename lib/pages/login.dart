@@ -36,6 +36,7 @@ class _LoginState extends State<Login> {
     initSharedPref();
   }
 
+  //call data in SharedPreferences to be used later
   void initSharedPref() async {
     prefs = await SharedPreferences.getInstance();
   }
@@ -48,20 +49,22 @@ class _LoginState extends State<Login> {
 
   void loginUser() async {
     try {
+      //check that name or password is not empty
       if (nameContrller.text.isNotEmpty || passwordContrller.text.isNotEmpty) {
         var loginBody = {
           "name": nameContrller.text,
           "password": passwordContrller.text
         };
+
+        //send the data entered to backend
         var response = await http.post(
           Uri.parse(login),
           headers: {'Content-Type': 'application/json'},
           body: jsonEncode(loginBody),
         );
-        // print(response.body);
         var decodedRespons = await jsonDecode(response.body);
 
-        // print(decodedRespons["token"]);
+        //check that data is sent to backend successfully then save the response vars in SharedPreferences
         var status = response.statusCode;
         if (status != 200) {
           setState(() {
@@ -88,9 +91,6 @@ class _LoginState extends State<Login> {
             id: userId,
             name: userName,
           );
-          // Loading(
-          //   token: myToken,
-          // );
 
           users = await getAllUSers(myToken, userId);
 
@@ -109,17 +109,6 @@ class _LoginState extends State<Login> {
         error = "wrong info";
       });
     }
-  }
-
-  //////////move to rooms tab
-  void getRooms(token) async {
-    var response = await http.post(
-      Uri.parse(allRooms),
-      headers: {
-        'Content-Type': 'application/json',
-        "x-auth-token": token,
-      },
-    );
   }
 
   @override
@@ -150,14 +139,6 @@ class _LoginState extends State<Login> {
                   SizedBox(
                     height: 40,
                   ),
-                  // Text(
-                  //   "Chat indvidually or create a room \n \t \t \t \t and have fun together ! ",
-                  //   style: TextStyle(
-                  //     fontSize: 20,
-                  //     letterSpacing: 1,
-                  //     color: Colors.grey[600],
-                  //   ),
-                  // ),
                   MyTextField(
                     obscureText: false,
                     hintText: "Name",
@@ -173,7 +154,6 @@ class _LoginState extends State<Login> {
                   SizedBox(
                     height: 60,
                   ),
-
                   MyButton(
                     onTab: () {
                       // Navigator.pushNamed(context, '/chats');
